@@ -1,0 +1,33 @@
+/* 画面用のベーススタイル（印刷用は print.css） */
+
+:root {
+  --line-color: #555;
+  --accent: #0288d1;
+  --accent-light: #e1f5fe;
+  --saturday-bg: #ddf0fa;
+  --sunday-bg: #fde4ea;
+  --saturday-text: #0b5394;
+  --sunday-text: #c62828;
+  --weekday-text: #333;
+
+  font-family: "Yu Gothic UI", "Yu Gothic", "Hiragino Sans", "Noto Sans JP",
+    "Meiryo", system-ui, sans-serif;
+  color: #222;
+  background-color: #fff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: #fff;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}

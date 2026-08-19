@@ -1,0 +1,51 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# --- 公開しないもの（GitHubへ追跡させない） ---
+
+node_modules/
+dist/
+
+# 参考にした手書きカレンダーのPDF（第三者の素材を含むため非公開）
+reference/
+
+# 提出用ZIPと確認用の成果物（スクリーンショット・PDF・ログ）
+submission/
+artifacts/
+
+# 環境変数・秘密情報
+.env
+.env.*
+
+# ブラウザ自動テストの一時データ
+playwright-report/
+test-results/
+
+# Claude Code の作業用ディレクトリ
+.claude/
+
+# 結果報告ファイル（ローカル提出用。GitHubには公開しない）
+claude-code-result-for-gpt.md
+github-pages-result-for-gpt.md

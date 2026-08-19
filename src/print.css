@@ -1,0 +1,153 @@
+/* ============================================================
+   印刷用CSS（A4縦1ページに1か月分を収める）
+
+   高さの考え方:
+     A4の高さ 297mm − 上下余白 6mm × 2 = 285mm
+     見出し（家族カレンダー / 年月）  約 9mm
+     表の見出し行                      6.5mm
+     残り（1日〜月末の行の合計）      約 268mm
+   1行の高さは 268mm ÷ その月の日数（--day-count）で決める。
+   ============================================================ */
+
+@page {
+  size: A4 portrait;
+  margin: 6mm;
+}
+
+@media print {
+  :root {
+    /* 1日〜月末の行が使える高さの合計 */
+    --print-rows-height: 268mm;
+  }
+
+  html,
+  body {
+    background: #fff;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* 土日の背景色と罫線をそのまま印刷する */
+  body,
+  .calendar-table,
+  .calendar-table th,
+  .calendar-table td,
+  .row--saturday,
+  .row--sunday,
+  .calendar-table thead th {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* 操作部分（アプリ名・前月／次月・年月選択・印刷ボタン・家族名変更欄）は印刷しない */
+  .no-print,
+  .error-banner {
+    display: none !important;
+  }
+
+  .app {
+    padding: 0;
+  }
+
+  /* 画面用の横スクロールを解除する */
+  .table-scroll {
+    overflow: visible;
+  }
+
+  /* --- 見出し --- */
+
+  .sheet__title {
+    gap: 8mm;
+    margin: 0 0 2mm;
+    font-size: 12pt;
+  }
+
+  .sheet__title-date {
+    font-size: 13pt;
+    color: #000;
+  }
+
+  /* --- 表 --- */
+
+  .calendar-table {
+    width: 100%;
+    min-width: 0;
+    table-layout: fixed;
+    border-collapse: collapse;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .calendar-table th,
+  .calendar-table td {
+    border: 0.25mm solid #333;
+    box-shadow: none;
+    border-radius: 0;
+    overflow: hidden;
+  }
+
+  .calendar-table tr {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .calendar-table thead th {
+    height: 6.5mm;
+    padding: 0.5mm 1mm;
+    font-size: 8pt;
+    background: #eaf4fb;
+  }
+
+  /* その月の日数に応じて行の高さを決める（31日でも1ページに収める） */
+  .calendar-table tbody tr {
+    height: calc(var(--print-rows-height) / var(--day-count, 31));
+  }
+
+  .row--saturday {
+    background: #ddf0fa;
+  }
+
+  .row--sunday {
+    background: #fde4ea;
+  }
+
+  .date-left {
+    padding: 0.5mm 1.2mm;
+    white-space: nowrap;
+  }
+
+  .date-left__num {
+    font-size: 9.5pt;
+  }
+
+  .date-left__wday {
+    margin-left: 1mm;
+    font-size: 8.5pt;
+  }
+
+  .date-right {
+    padding: 0.5mm 1mm;
+    font-size: 12pt;
+  }
+
+  /* --- 予定セル --- */
+
+  /* 画面入力用のtextareaは印刷しない
+     （枠線・スクロールバー・リサイズハンドル、および
+       スクロール位置の分しか印刷されない問題を避けるため） */
+  .cell__input {
+    display: none !important;
+  }
+
+  /* 印刷用テキストを表示する（改行を保ち、日本語を折り返す） */
+  .cell__print {
+    display: block;
+    padding: 0.6mm 1.2mm;
+    font-size: 8pt;
+    line-height: 1.25;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: normal;
+    color: #000;
+  }
+}
