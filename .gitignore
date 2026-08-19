@@ -35,6 +35,7 @@ reference/
 submission/
 artifacts/
 pwa-artifacts/
+recurring-time-artifacts/
 
 # 環境変数・秘密情報
 .env
@@ -50,4 +51,5 @@ test-results/
 # 結果報告ファイル（ローカル提出用。GitHubには公開しない）
 claude-code-result-for-gpt.md
 github-pages-result-for-gpt.md
+recurring-time-result-for-gpt.md
 pwa-result-for-gpt.md
