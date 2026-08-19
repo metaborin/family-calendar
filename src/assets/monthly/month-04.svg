@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 120" width="240" height="120" fill="none" aria-hidden="true" focusable="false">
+  <!-- 4月：桜の花・若葉・小さな蝶（オリジナル） -->
+  <!-- 桜の花 -->
+  <g stroke="#a86f85" stroke-width="2.8" stroke-linejoin="round">
+    <path d="M62 30 q9 0 9 11 q0 8 -9 10 q-9 -2 -9 -10 q0 -11 9 -11 z" fill="#e5a3b6" />
+    <path d="M84 48 q6 7 -3 13 q-6 4 -12 -2 q-3 -8 4 -12 q7 -4 11 1 z" fill="#e5a3b6" />
+    <path d="M76 76 q-3 8 -13 6 q-7 -2 -6 -10 q4 -7 12 -6 q8 2 7 10 z" fill="#e5a3b6" />
+    <path d="M48 76 q-8 3 -12 -5 q-3 -7 4 -11 q8 -2 12 5 q3 8 -4 11 z" fill="#e5a3b6" />
+    <path d="M40 48 q-7 -5 -1 -12 q5 -6 12 -1 q4 7 -2 12 q-6 5 -9 1 z" fill="#e5a3b6" />
+    <circle cx="62" cy="56" r="5" fill="#f4e3e8" />
+  </g>
+  <!-- 若葉 -->
+  <g stroke="#a86f85" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M126 88 q2 -26 0 -40" />
+    <path d="M126 62 q-16 -4 -20 -18 q16 -2 20 18 z" fill="#8cbf7a" />
+    <path d="M126 74 q16 -3 20 -16 q-16 -3 -20 16 z" fill="#8cbf7a" />
+  </g>
+  <!-- 蝶 -->
+  <g stroke="#a86f85" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M192 60 q-18 -20 -26 -6 q-6 12 24 12 z" fill="#f4e3e8" />
+    <path d="M196 60 q18 -20 26 -6 q6 12 -24 12 z" fill="#f4e3e8" />
+    <path d="M192 62 q-14 14 -6 18 q8 4 12 -14 z" fill="#f4e3e8" />
+    <path d="M196 62 q14 14 6 18 q-8 4 -12 -14 z" fill="#f4e3e8" />
+    <path d="M194 52 v26" />
+    <path d="M194 52 l-7 -9 M194 52 l7 -9" />
+  </g>
+</svg>

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 120" width="240" height="120" fill="none" aria-hidden="true" focusable="false">
+  <!-- 5月：こいのぼり・新緑・爽やかな風（オリジナル） -->
+  <!-- こいのぼり（2匹） -->
+  <g stroke="#3f7d79" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M34 40 h44 q16 0 22 10 q-6 10 -22 10 h-44 l10 -10 z" fill="#7fb1ab" />
+    <circle cx="46" cy="48" r="2.6" fill="#3f7d79" stroke="none" />
+    <path d="M60 41 q4 9 0 18 M72 41 q4 9 0 18" />
+    <path d="M40 68 h34 q13 0 18 8 q-5 8 -18 8 h-34 l8 -8 z" fill="#e1eeec" />
+    <circle cx="50" cy="74" r="2.2" fill="#3f7d79" stroke="none" />
+    <path d="M62 69 q3 7 0 14" />
+    <line x1="26" y1="30" x2="26" y2="92" />
+  </g>
+  <!-- 新緑 -->
+  <g stroke="#3f7d79" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M140 90 q2 -28 0 -42" />
+    <path d="M140 60 q-18 -5 -22 -20 q18 -2 22 20 z" fill="#7fae6a" />
+    <path d="M140 74 q18 -4 22 -18 q-18 -3 -22 18 z" fill="#7fae6a" />
+    <path d="M140 48 q-13 -4 -15 -14 q13 -1 15 14 z" fill="#e1eeec" />
+  </g>
+  <!-- 爽やかな風 -->
+  <g stroke="#3f7d79" stroke-width="3" stroke-linecap="round">
+    <path d="M182 44 q20 -10 38 -2" />
+    <path d="M188 58 q18 -8 32 -1" />
+    <path d="M184 72 q22 -10 38 0" />
+  </g>
+</svg>

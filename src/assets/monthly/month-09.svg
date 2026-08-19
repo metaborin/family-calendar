@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 120" width="240" height="120" fill="none" aria-hidden="true" focusable="false">
+  <!-- 9月：月・すすき・秋の雲（オリジナル） -->
+  <!-- 月 -->
+  <g stroke="#9a7f45" stroke-width="3" stroke-linejoin="round">
+    <circle cx="54" cy="52" r="26" fill="#d9c184" />
+    <circle cx="45" cy="43" r="5.5" fill="#c0a566" stroke="none" />
+    <circle cx="63" cy="61" r="4.5" fill="#c0a566" stroke="none" />
+    <circle cx="60" cy="38" r="3.2" fill="#c0a566" stroke="none" />
+    <circle cx="44" cy="62" r="3" fill="#c0a566" stroke="none" />
+  </g>
+  <!-- すすき -->
+  <g stroke="#9a7f45" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M116 100 q8 -34 18 -54" />
+    <path d="M134 44 q12 9 7 22 q-12 5 -16 -9 q-2 -11 9 -13 z" fill="#f1eadb" />
+    <path d="M142 96 q3 -30 13 -46" />
+    <path d="M155 48 q11 8 6 20 q-11 4 -14 -8 q-2 -10 8 -12 z" fill="#f1eadb" />
+    <path d="M124 74 q-13 -5 -15 -14 M148 80 q13 -6 15 -15" />
+  </g>
+  <!-- 秋の雲 -->
+  <g stroke="#9a7f45" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M178 56 q3 -14 17 -12 q6 -12 20 -6 q14 1 14 12 q0 10 -14 10 h-30 q-9 0 -7 -4 z" fill="#f1eadb" />
+    <path d="M186 74 q14 -5 28 0" />
+  </g>
+</svg>

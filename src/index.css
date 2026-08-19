@@ -22,7 +22,8 @@
 
 body {
   margin: 0;
-  background-color: #fff;
+  /* 画面ではごく薄い中立色。印刷時は print.css で白へ戻す */
+  background-color: #f6f8fa;
 }
 
 button,

@@ -41,7 +41,10 @@ import type {
   TimedEventStore,
   WeeklyRecurringRule,
 } from './events/types'
+import MonthHeader from './theme/MonthHeader'
+import { getMonthTheme } from './theme/monthThemes'
 import './App.css'
+import './theme/monthTheme.css'
 import './pwa/pwa.css'
 import './events/events.css'
 import './print.css'
@@ -90,6 +93,9 @@ export default function App() {
   const loadError = initial.error ?? initialEvents.error
   const [saveError, setSaveError] = useState<string | null>(null)
   const errorMessage = saveError ?? loadError
+
+  // 表示中の月から自動的に決まる（保存も設定も不要）
+  const monthTheme = getMonthTheme(month)
 
   const monthKey = toMonthKey(year, month)
   const days = useMemo(() => buildMonthDays(year, month), [year, month])
@@ -343,7 +349,18 @@ export default function App() {
   }
 
   return (
-    <div className="app" style={{ '--day-count': dayCount } as React.CSSProperties}>
+    <div
+      className="app"
+      style={
+        {
+          '--day-count': dayCount,
+          // 表示中の月から自動で決まる控えめな差し色（localStorageには保存しない）
+          '--month-accent': monthTheme.accent,
+          '--month-accent-soft': monthTheme.accentSoft,
+          '--month-accent-border': monthTheme.accentBorder,
+        } as React.CSSProperties
+      }
+    >
       {errorMessage && (
         <p className="error-banner" role="alert">
           {errorMessage}
@@ -397,17 +414,17 @@ export default function App() {
 
           <OfflineIndicator />
 
-          <button type="button" onClick={() => openAddEvent()}>
+          <button type="button" className="controls__primary" onClick={() => openAddEvent()}>
             予定を追加
           </button>
 
-          <button type="button" onClick={() => setRulesOpen(true)}>
+          <button type="button" className="controls__secondary" onClick={() => setRulesOpen(true)}>
             定期予定
           </button>
 
           <InstallGuide />
 
-          <button type="button" className="controls__print" onClick={() => window.print()}>
+          <button type="button" className="controls__print controls__secondary" onClick={() => window.print()}>
             印刷
           </button>
         </div>
@@ -429,12 +446,7 @@ export default function App() {
 
       {/* 印刷対象 */}
       <div className="sheet">
-        <h2 className="sheet__title">
-          <span className="sheet__title-app">家族カレンダー</span>
-          <span className="sheet__title-date">
-            {year}年 {month}月
-          </span>
-        </h2>
+        <MonthHeader year={year} month={month} illustration={monthTheme.illustration} />
 
         {printWarning && (
           <p className="ev-print-warning no-print">

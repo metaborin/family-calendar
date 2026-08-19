@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 120" width="240" height="120" fill="none" aria-hidden="true" focusable="false">
+  <!-- 7月：笹の葉・星・夏の夜（オリジナル） -->
+  <!-- 笹の葉 -->
+  <g stroke="#3f4f7d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M46 26 q4 34 2 66" />
+    <path d="M48 44 q-20 -6 -24 -20 q20 -2 24 20 z" fill="#8b96bd" />
+    <path d="M48 60 q20 -6 24 -20 q-20 -2 -24 20 z" fill="#8b96bd" />
+    <path d="M48 78 q-18 -5 -22 -17 q18 -2 22 17 z" fill="#e4e7f0" />
+  </g>
+  <!-- 短冊（文字なしの小さな飾り） -->
+  <g stroke="#8b96bd" stroke-width="2.6" stroke-linejoin="round">
+    <rect x="66" y="52" width="12" height="22" rx="3" fill="#dcc582" />
+    <path d="M72 46 v6" stroke-linecap="round" />
+  </g>
+  <!-- 星 -->
+  <g stroke="#3f4f7d" stroke-width="2.6" stroke-linejoin="round">
+    <path d="M132 30 l6 13 l14 2 l-10 10 l3 14 l-13 -7 l-13 7 l3 -14 l-10 -10 l14 -2 z" fill="#dcc582" />
+    <path d="M172 62 l4 9 l10 1 l-7 7 l2 10 l-9 -5 l-9 5 l2 -10 l-7 -7 l10 -1 z" fill="#e4e7f0" />
+  </g>
+  <!-- 夏の夜（三日月と小さな星） -->
+  <g stroke="#3f4f7d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M214 34 q-18 6 -16 24 q2 16 18 18 q-12 -12 -10 -24 q2 -12 8 -18 z" fill="#8b96bd" />
+    <path d="M198 82 v8 M194 86 h8" />
+  </g>
+</svg>

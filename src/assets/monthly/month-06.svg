@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 120" width="240" height="120" fill="none" aria-hidden="true" focusable="false">
+  <!-- 6月：あじさい・傘・雨粒（オリジナル） -->
+  <!-- あじさい -->
+  <g stroke="#5b6099" stroke-width="2.4" stroke-linejoin="round">
+    <circle cx="52" cy="40" r="9" fill="#9298c6" />
+    <circle cx="68" cy="46" r="9" fill="#e6e7f2" />
+    <circle cx="40" cy="52" r="9" fill="#e6e7f2" />
+    <circle cx="58" cy="56" r="9" fill="#9298c6" />
+    <circle cx="74" cy="62" r="9" fill="#9298c6" />
+    <circle cx="44" cy="68" r="9" fill="#e6e7f2" />
+    <circle cx="60" cy="72" r="8" fill="#e6e7f2" />
+  </g>
+  <g stroke="#5b6099" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M58 82 v12" />
+    <path d="M58 88 q-14 -2 -18 -12 q14 -1 18 12 z" fill="#9298c6" />
+  </g>
+  <!-- 傘 -->
+  <g stroke="#5b6099" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M110 58 q22 -30 44 0 z" fill="#6f95c4" />
+    <path d="M110 58 q11 -8 22 0 q11 -8 22 0" />
+    <path d="M132 58 v28 q0 8 -9 8 q-6 0 -7 -6" />
+  </g>
+  <!-- 雨粒 -->
+  <g stroke="#6f95c4" stroke-width="3" stroke-linecap="round">
+    <path d="M182 36 v14 M200 44 v14 M216 34 v12 M192 66 v12 M210 70 v12" />
+    <circle cx="182" cy="60" r="3" fill="#e6e7f2" />
+    <circle cx="218" cy="58" r="3" fill="#e6e7f2" />
+  </g>
+</svg>

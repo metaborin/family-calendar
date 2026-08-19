@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 120" width="240" height="120" fill="none" aria-hidden="true" focusable="false">
+  <!-- 2月：雪・手袋・小さな梅（オリジナル） -->
+  <g stroke="#6f6693" stroke-width="3" stroke-linecap="round">
+    <!-- 降る雪 -->
+    <path d="M44 34 v14 M37 41 h14 M40.5 36.5 l7 9 M47.5 36.5 l-7 9" />
+    <path d="M70 70 v10 M65 75 h10" />
+    <circle cx="40" cy="76" r="3.5" fill="#eae7f2" />
+    <circle cx="78" cy="44" r="3" fill="#eae7f2" />
+  </g>
+  <!-- 手袋（ミトン） -->
+  <g stroke="#6f6693" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M112 46 q0 -12 13 -12 q13 0 13 12 v22 q0 8 -13 8 q-13 0 -13 -8 z" fill="#eae7f2" />
+    <path d="M112 56 q-9 1 -9 9 q0 7 9 6" fill="#eae7f2" />
+    <path d="M110 68 h30" />
+    <path d="M138 76 q6 4 6 12" />
+  </g>
+  <!-- 小さな梅 -->
+  <g stroke="#6f6693" stroke-width="2.4" stroke-linejoin="round">
+    <circle cx="190" cy="46" r="8" fill="#d7a4b4" />
+    <circle cx="200" cy="53" r="8" fill="#d7a4b4" />
+    <circle cx="196" cy="65" r="8" fill="#d7a4b4" />
+    <circle cx="184" cy="65" r="8" fill="#d7a4b4" />
+    <circle cx="180" cy="53" r="8" fill="#d7a4b4" />
+    <circle cx="190" cy="56" r="3.6" fill="#b3aecb" />
+  </g>
+  <g stroke="#6f6693" stroke-width="3" stroke-linecap="round">
+    <path d="M190 74 q1 10 -6 16" />
+  </g>
+</svg>

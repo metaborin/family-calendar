@@ -13,6 +13,11 @@ export default defineConfig({
   // localStorage はパスではなくオリジン単位で保存されるため、
   // このパス変更で既存のローカル保存データが消えることはない。
   base: BASE,
+  build: {
+    // 月別SVGはデータURIへ埋め込まず実ファイルとして出力する。
+    // これにより Service Worker の precache 対象になり、オフラインでも確実に表示できる。
+    assetsInlineLimit: (filePath) => (filePath.endsWith('.svg') ? false : undefined),
+  },
   plugins: [
     react(),
     VitePWA({

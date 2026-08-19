@@ -74,15 +74,9 @@
   background: var(--accent-light);
 }
 
+/* 印刷ボタンは右端へ寄せる（見た目の強さは monthTheme.css で調整） */
 .controls__print {
   margin-left: auto;
-  font-weight: bold;
-  background: var(--accent) !important;
-  color: #fff !important;
-}
-
-.controls__print:hover {
-  background: #0277bd !important;
 }
 
 .field {
@@ -126,21 +120,6 @@
 
 .names input {
   width: 120px;
-}
-
-/* --- 見出し（印刷にも出る） ---------------------------------- */
-
-.sheet__title {
-  display: flex;
-  align-items: baseline;
-  gap: 16px;
-  margin: 0 0 8px;
-  font-size: 18px;
-}
-
-.sheet__title-date {
-  font-size: 20px;
-  color: #0b5394;
 }
 
 /* --- 表 ------------------------------------------------------ */

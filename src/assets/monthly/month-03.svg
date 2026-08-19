@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 120" width="240" height="120" fill="none" aria-hidden="true" focusable="false">
+  <!-- 3月：春の風・桜のつぼみ・小鳥（オリジナル） -->
+  <!-- 春の風 -->
+  <g stroke="#8f7080" stroke-width="3" stroke-linecap="round">
+    <path d="M20 42 q22 -11 44 -1" />
+    <path d="M26 58 q20 -9 38 0" />
+    <path d="M22 74 q24 -10 46 1" />
+  </g>
+  <!-- 桜のつぼみ -->
+  <g stroke="#8f7080" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M116 94 q4 -26 2 -44" />
+    <path d="M118 56 q-4 -18 8 -25 q13 7 8 25 q-8 7 -16 0 z" fill="#dba9b8" />
+    <path d="M104 70 q-8 -14 2 -22 q11 5 9 18 q-6 6 -11 4 z" fill="#f0dfe4" />
+  </g>
+  <g stroke="#8fae86" stroke-width="3" stroke-linecap="round">
+    <path d="M117 82 q-14 -2 -19 -12" />
+  </g>
+  <!-- 小鳥 -->
+  <g stroke="#8f7080" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <!-- 体 -->
+    <path d="M166 70 q-2 -22 20 -24 q22 -2 28 14 q4 12 -8 17 q-22 8 -40 -7 z" fill="#f0dfe4" />
+    <!-- 翼 -->
+    <path d="M180 62 q14 -6 26 4 q-12 9 -26 -4 z" fill="#dba9b8" />
+    <!-- くちばし -->
+    <path d="M214 58 l12 4 l-12 5 z" fill="#dba9b8" />
+    <!-- 目 -->
+    <circle cx="206" cy="52" r="2.4" fill="#8f7080" stroke="none" />
+    <!-- 尾 -->
+    <path d="M166 66 q-14 -8 -20 -2 q8 8 20 8 z" fill="#f0dfe4" />
+    <!-- 足 -->
+    <path d="M180 84 v9 M196 84 v9" />
+  </g>
+</svg>

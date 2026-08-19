@@ -54,19 +54,6 @@
     overflow: visible;
   }
 
-  /* --- 見出し --- */
-
-  .sheet__title {
-    gap: 8mm;
-    margin: 0 0 2mm;
-    font-size: 12pt;
-  }
-
-  .sheet__title-date {
-    font-size: 13pt;
-    color: #000;
-  }
-
   /* --- 表 --- */
 
   .calendar-table {

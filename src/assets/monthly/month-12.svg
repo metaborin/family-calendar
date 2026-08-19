@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 120" width="240" height="120" fill="none" aria-hidden="true" focusable="false">
+  <!-- 12月：雪の結晶・小さな木・控えめな冬の飾り（オリジナル） -->
+  <!-- 雪の結晶 -->
+  <g stroke="#4f88a5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="30" y1="52" x2="82" y2="52" />
+    <line x1="43" y1="29.5" x2="69" y2="74.5" />
+    <line x1="69" y1="29.5" x2="43" y2="74.5" />
+    <path d="M56 34 l-6 7 M56 34 l6 7 M56 70 l-6 -7 M56 70 l6 -7" />
+    <circle cx="56" cy="52" r="4" fill="#e6f0f5" />
+    <path d="M38 78 v10 M34 83 h8" />
+  </g>
+  <!-- 小さな木 -->
+  <g stroke="#4f88a5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M132 26 l16 24 h-32 z" fill="#6f8f72" />
+    <path d="M132 44 l20 26 h-40 z" fill="#6f8f72" />
+    <path d="M132 62 l24 28 h-48 z" fill="#e6f0f5" />
+    <path d="M132 90 v8" />
+  </g>
+  <g stroke="#4f88a5" stroke-width="3" stroke-linecap="round">
+    <path d="M124 98 h16" />
+  </g>
+  <!-- 冬の飾り（リボン結び） -->
+  <g stroke="#4f88a5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="198" cy="56" r="22" fill="#e6f0f5" />
+    <path d="M198 34 v44 M176 56 h44" />
+    <path d="M198 50 q-12 -10 -15 0 q-3 9 15 4" fill="#9dc0d1" />
+    <path d="M198 50 q12 -10 15 0 q3 9 -15 4" fill="#9dc0d1" />
+  </g>
+</svg>

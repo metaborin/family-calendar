@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 120" width="240" height="120" fill="none" aria-hidden="true" focusable="false">
+  <!-- 1月：雪の結晶・梅の花・新年の結び飾り（オリジナル） -->
+  <g stroke="#56778c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <!-- 雪の結晶 -->
+    <line x1="34" y1="60" x2="86" y2="60" />
+    <line x1="47" y1="37.5" x2="73" y2="82.5" />
+    <line x1="73" y1="37.5" x2="47" y2="82.5" />
+    <path d="M60 42 l-6 7 M60 42 l6 7 M60 78 l-6 -7 M60 78 l6 -7" />
+    <path d="M42 50 l1 8 M78 70 l-1 -8" />
+    <circle cx="60" cy="60" r="4" fill="#e3edf3" />
+  </g>
+  <!-- 梅の花 -->
+  <g stroke="#56778c" stroke-width="2.6" stroke-linejoin="round">
+    <circle cx="128" cy="39" r="10" fill="#dcaeb8" />
+    <circle cx="140" cy="48" r="10" fill="#dcaeb8" />
+    <circle cx="136" cy="63" r="10" fill="#dcaeb8" />
+    <circle cx="120" cy="63" r="10" fill="#dcaeb8" />
+    <circle cx="116" cy="48" r="10" fill="#dcaeb8" />
+    <circle cx="128" cy="52" r="4.5" fill="#a9c2d1" />
+  </g>
+  <g stroke="#56778c" stroke-width="3" stroke-linecap="round">
+    <path d="M128 74 q2 12 -6 20" />
+  </g>
+  <!-- 結び飾り -->
+  <g stroke="#56778c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M192 58 q-16 -14 -20 0 q-4 12 20 6" fill="#e3edf3" />
+    <path d="M192 58 q16 -14 20 0 q4 12 -20 6" fill="#e3edf3" />
+    <circle cx="192" cy="62" r="4.5" fill="#dcaeb8" />
+    <path d="M188 68 l-4 18 M196 68 l4 18" />
+  </g>
+</svg>
