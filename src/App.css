@@ -6,6 +6,20 @@
   padding: 12px 16px 32px;
 }
 
+/*
+ * ホーム画面アプリ（standalone）として起動したときに、
+ * iPhone のノッチやホームインジケータと操作部が重ならないようにする。
+ * @media screen で囲っているため、印刷時にはこの余白は適用されない。
+ */
+@media screen {
+  .app {
+    padding-top: calc(12px + env(safe-area-inset-top, 0px));
+    padding-right: calc(16px + env(safe-area-inset-right, 0px));
+    padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px));
+    padding-left: calc(16px + env(safe-area-inset-left, 0px));
+  }
+}
+
 .error-banner {
   margin: 0 0 12px;
   padding: 8px 12px;

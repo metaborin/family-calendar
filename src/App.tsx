@@ -12,7 +12,11 @@ import {
 } from './calendar'
 import { loadInitialState, saveNames, saveSchedules } from './storage'
 import { COLUMN_IDS, type ColumnId, type FamilyNames, type ScheduleStore } from './types'
+import InstallGuide from './pwa/InstallGuide'
+import OfflineIndicator from './pwa/OfflineIndicator'
+import PwaUpdatePrompt from './pwa/PwaUpdatePrompt'
 import './App.css'
+import './pwa/pwa.css'
 import './print.css'
 
 /** localStorageへ書き込むまでの待ち時間（入力のたびに書かないためのデバウンス） */
@@ -196,6 +200,10 @@ export default function App() {
             表示中：{year}年 {month}月
           </span>
 
+          <OfflineIndicator />
+
+          <InstallGuide />
+
           <button type="button" className="controls__print" onClick={() => window.print()}>
             印刷
           </button>
@@ -234,6 +242,9 @@ export default function App() {
           />
         </div>
       </div>
+
+      {/* 新しいバージョンの案内（押したときだけ更新する） */}
+      <PwaUpdatePrompt />
     </div>
   )
 }

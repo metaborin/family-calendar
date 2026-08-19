@@ -34,6 +34,7 @@ reference/
 # 提出用ZIPと確認用の成果物（スクリーンショット・PDF・ログ）
 submission/
 artifacts/
+pwa-artifacts/
 
 # 環境変数・秘密情報
 .env
@@ -49,3 +50,4 @@ test-results/
 # 結果報告ファイル（ローカル提出用。GitHubには公開しない）
 claude-code-result-for-gpt.md
 github-pages-result-for-gpt.md
+pwa-result-for-gpt.md
