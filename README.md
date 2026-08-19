@@ -619,7 +619,7 @@ family-calendar/
 │       └── deploy-pages.yml   GitHub Pages への自動デプロイ
 ├── src/
 │   ├── App.tsx                画面全体・状態管理・保存処理
-│   ├── CalendarTable.tsx      予定表（8列の表）
+│   ├── CalendarTable.tsx      予定表（7列：日付＋予定6列）
 │   ├── calendar.ts            年月・日数・曜日の計算
 │   ├── storage.ts             localStorageの読み書き
 │   ├── types.ts               型定義と固定の列ID

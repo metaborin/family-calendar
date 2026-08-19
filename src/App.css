@@ -163,18 +163,18 @@
   vertical-align: top;
 }
 
-/* 列幅（合計100%） */
+/*
+ * 列幅（7列・合計100%）
+ *   日付欄 7% ＋ 予定6列 × 15.5% = 100%
+ * 予定6列は「みんなの予定」も含めてすべて同じ幅にする。
+ * この指定は印刷時にもそのまま使う（print.css では上書きしていない）。
+ */
 .col-date-left {
   width: 7%;
 }
-.col-everyone {
-  width: 19%;
-}
-.col-member {
-  width: 13.6%;
-}
-.col-date-right {
-  width: 6%;
+
+.col-schedule {
+  width: 15.5%;
 }
 
 .calendar-table thead th {
@@ -193,40 +193,46 @@
   background: var(--sunday-bg);
 }
 
-.date-left {
-  padding: 4px 6px;
+/* --- 日付・曜日の欄 ------------------------------------------ */
+
+/* `.calendar-table th` より詳細度を高くして vertical-align: top を上書きする */
+.calendar-table .date-cell {
+  padding: 2px 4px;
   font-weight: normal;
-  text-align: left;
-  white-space: nowrap;
+  /* セル内で縦方向の中央へ寄せる */
+  vertical-align: middle;
+  text-align: center;
   color: var(--weekday-text);
 }
 
-.date-left__num {
-  font-size: 15px;
-  font-weight: bold;
+/* 日付と曜日を同じ行に並べ、水平・垂直とも中央へ寄せる */
+.date-cell__content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3em;
+  line-height: 1;
+  white-space: nowrap;
 }
 
-.date-left__wday {
-  margin-left: 5px;
-  font-size: 13px;
+.date-cell__number {
+  font-size: 1.05rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 
-.row--saturday .date-left,
-.row--saturday .date-right {
+.date-cell__weekday {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+/* 土日は文字色でも区別する（背景色だけに頼らない） */
+.row--saturday .date-cell {
   color: var(--saturday-text);
 }
 
-.row--sunday .date-left,
-.row--sunday .date-right {
+.row--sunday .date-cell {
   color: var(--sunday-text);
-}
-
-.date-right {
-  padding: 2px 6px;
-  font-size: 20px;
-  font-weight: bold;
-  text-align: center;
-  color: var(--weekday-text);
 }
 
 /* --- 予定セル ------------------------------------------------ */

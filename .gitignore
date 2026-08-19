@@ -36,6 +36,7 @@ submission/
 artifacts/
 pwa-artifacts/
 recurring-time-artifacts/
+calendar-layout-artifacts/
 
 # 環境変数・秘密情報
 .env
@@ -52,4 +53,5 @@ test-results/
 claude-code-result-for-gpt.md
 github-pages-result-for-gpt.md
 recurring-time-result-for-gpt.md
+calendar-layout-result-for-gpt.md
 pwa-result-for-gpt.md

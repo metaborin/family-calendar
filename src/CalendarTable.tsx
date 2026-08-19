@@ -34,15 +34,15 @@ export default function CalendarTable({
 }: Props) {
   return (
     <table className="calendar-table">
+      {/* 7列（日付＋予定6列）。予定6列はすべて同じ幅にする */}
       <colgroup>
         <col className="col-date-left" />
-        <col className="col-everyone" />
-        <col className="col-member" />
-        <col className="col-member" />
-        <col className="col-member" />
-        <col className="col-member" />
-        <col className="col-member" />
-        <col className="col-date-right" />
+        <col className="col-schedule" />
+        <col className="col-schedule" />
+        <col className="col-schedule" />
+        <col className="col-schedule" />
+        <col className="col-schedule" />
+        <col className="col-schedule" />
       </colgroup>
       <thead>
         <tr>
@@ -54,9 +54,6 @@ export default function CalendarTable({
               {names[id]}
             </th>
           ))}
-          <th scope="col" className="head-date">
-            日付
-          </th>
         </tr>
       </thead>
       <tbody>
@@ -64,9 +61,12 @@ export default function CalendarTable({
           const daySchedule = monthSchedule[String(day)]
           return (
             <tr key={day} className={rowClass(weekday)}>
-              <th scope="row" className="date-left">
-                <span className="date-left__num">{day}</span>
-                <span className="date-left__wday">{weekdayLabel}</span>
+              {/* 日付と曜日は同じ行に、セルの縦横中央へ表示する */}
+              <th scope="row" className="date-cell">
+                <span className="date-cell__content">
+                  <span className="date-cell__number">{day}</span>
+                  <span className="date-cell__weekday">{weekdayLabel}</span>
+                </span>
               </th>
 
               {COLUMN_IDS.map((id) => {
@@ -113,8 +113,6 @@ export default function CalendarTable({
                   </td>
                 )
               })}
-
-              <td className="date-right">{day}</td>
             </tr>
           )
         })}

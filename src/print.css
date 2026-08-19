@@ -111,23 +111,20 @@
     background: #fde4ea;
   }
 
-  .date-left {
-    padding: 0.5mm 1.2mm;
+  /* 日付・曜日は印刷でも中央揃え（中央寄せ自体は App.css の .date-cell__content） */
+  .calendar-table .date-cell {
+    padding: 0.3mm 0.8mm;
+    vertical-align: middle;
+    text-align: center;
     white-space: nowrap;
   }
 
-  .date-left__num {
-    font-size: 9.5pt;
+  .date-cell__number {
+    font-size: 10pt;
   }
 
-  .date-left__wday {
-    margin-left: 1mm;
-    font-size: 8.5pt;
-  }
-
-  .date-right {
-    padding: 0.5mm 1mm;
-    font-size: 12pt;
+  .date-cell__weekday {
+    font-size: 9pt;
   }
 
   /* --- 予定セル --- */
