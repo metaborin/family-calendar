@@ -39,7 +39,8 @@
   padding: 10px 0;
   margin-bottom: 12px;
   background: #fff;
-  border-bottom: 2px solid var(--accent);
+  /* 区切り線の色は monthTheme.css で月テーマへ連動させる */
+  border-bottom: 2px solid var(--month-accent-border, var(--accent));
 }
 
 .controls__row {
@@ -47,11 +48,6 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 10px;
-}
-
-.controls__title {
-  margin: 0 8px 0 0;
-  font-size: 20px;
 }
 
 .controls__current {

@@ -358,6 +358,8 @@ export default function App() {
           '--month-accent': monthTheme.accent,
           '--month-accent-soft': monthTheme.accentSoft,
           '--month-accent-border': monthTheme.accentBorder,
+          '--month-action-accent': monthTheme.actionAccent,
+          '--month-action-accent-hover': monthTheme.actionAccentHover,
         } as React.CSSProperties
       }
     >
@@ -367,11 +369,13 @@ export default function App() {
         </p>
       )}
 
-      {/* 操作部分（印刷されない） */}
-      <div className="controls no-print">
+      {/*
+        操作部分（印刷されない）。
+        可視タイトル「家族カレンダー」は月ヘッダー側の h1 に一本化したため、
+        ここには置かない。代わりに領域の役割を aria-label で伝える。
+      */}
+      <div className="controls no-print" role="group" aria-label="カレンダー操作">
         <div className="controls__row">
-          <h1 className="controls__title">家族カレンダー</h1>
-
           <button type="button" onClick={() => goToMonth(-1)}>
             前月
           </button>

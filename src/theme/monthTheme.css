@@ -14,6 +14,9 @@
   --month-accent: #0288d1;
   --month-accent-soft: #eef4f8;
   --month-accent-border: #c9dbe4;
+  /* 主要ボタン用（白文字とのコントラストを確保した濃色） */
+  --month-action-accent: #01699e;
+  --month-action-accent-hover: #015a87;
 }
 
 /* --- 月ヘッダー --------------------------------------------- */
@@ -101,15 +104,22 @@
   transition: background-color 150ms ease, border-color 150ms ease;
 }
 
+/*
+   主要ボタンは accent ではなく actionAccent を使う。
+   accent は月ヘッダーやイラスト周辺の柔らかい配色に使うため、
+   白文字とのコントラスト（4.5:1以上）は actionAccent 側で確保する。
+*/
 .controls__primary {
-  border: 1px solid var(--month-accent) !important;
-  background: var(--month-accent) !important;
+  border: 1px solid var(--month-action-accent) !important;
+  background: var(--month-action-accent) !important;
   color: #fff !important;
   font-weight: 700;
 }
 
-.controls__primary:hover {
-  filter: brightness(0.94);
+.controls__primary:hover,
+.controls__primary:active {
+  border-color: var(--month-action-accent-hover) !important;
+  background: var(--month-action-accent-hover) !important;
 }
 
 .controls__secondary {

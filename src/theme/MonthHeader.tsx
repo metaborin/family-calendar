@@ -26,7 +26,8 @@ export default function MonthHeader({ year, month, illustration }: Props) {
   return (
     <div className="month-header">
       <div className="month-header__text">
-        <h2 className="month-header__app">家族カレンダー</h2>
+        {/* 画面上で唯一の可視タイトル（ページの h1） */}
+        <h1 className="month-header__app">家族カレンダー</h1>
         <p className="month-header__date">
           {year}年 {month}月
         </p>

@@ -31,34 +31,90 @@ export type MonthTheme = {
   accentSoft: string
   /** 枠線に使う中間色 */
   accentBorder: string
+  /**
+   * 主要ボタン（予定を追加）の背景。
+   * 白文字とのコントラスト比が全12か月で 4.5:1 以上になるよう、
+   * accent と同じ色相のまま明度だけ下げてある。
+   */
+  actionAccent: string
+  /** 主要ボタンのホバー・押下時の背景（さらに濃い） */
+  actionAccentHover: string
 }
 
 /** 月番号（1〜12）→ テーマ */
 export const monthThemes: Record<number, MonthTheme> = {
   // 1月：雪・梅 → 青灰色
-  1: { illustration: month01, accent: '#56778c', accentSoft: '#eef3f6', accentBorder: '#c6d7e0' },
+  1: {
+    illustration: month01, accent: '#56778c',
+    accentSoft: '#eef3f6', accentBorder: '#c6d7e0',
+    actionAccent: '#56778c', actionAccentHover: '#4c6a7c',
+  },
   // 2月：冬・梅 → 淡い紫
-  2: { illustration: month02, accent: '#6f6693', accentSoft: '#f1eff6', accentBorder: '#cfcadf' },
+  2: {
+    illustration: month02, accent: '#6f6693',
+    accentSoft: '#f1eff6', accentBorder: '#cfcadf',
+    actionAccent: '#6f6693', actionAccentHover: '#645c84',
+  },
   // 3月：春の始まり → 薄い桜色
-  3: { illustration: month03, accent: '#8f7080', accentSoft: '#f7f0f2', accentBorder: '#dfcdd4' },
+  3: {
+    illustration: month03, accent: '#8f7080',
+    accentSoft: '#f7f0f2', accentBorder: '#dfcdd4',
+    actionAccent: '#896b7a', actionAccentHover: '#7b606d',
+  },
   // 4月：桜・若葉 → 桜色
-  4: { illustration: month04, accent: '#a86f85', accentSoft: '#f9f0f3', accentBorder: '#e6ccd5' },
+  4: {
+    illustration: month04, accent: '#a86f85',
+    accentSoft: '#f9f0f3', accentBorder: '#e6ccd5',
+    actionAccent: '#9f6079', actionAccentHover: '#8f566d',
+  },
   // 5月：新緑 → 青緑
-  5: { illustration: month05, accent: '#3f7d79', accentSoft: '#ecf4f3', accentBorder: '#bcd8d5' },
+  5: {
+    illustration: month05, accent: '#3f7d79',
+    accentSoft: '#ecf4f3', accentBorder: '#bcd8d5',
+    actionAccent: '#3f7d79', actionAccentHover: '#366c69',
+  },
   // 6月：あじさい → 青紫
-  6: { illustration: month06, accent: '#5b6099', accentSoft: '#eff0f7', accentBorder: '#c9cbe2' },
+  6: {
+    illustration: month06, accent: '#5b6099',
+    accentSoft: '#eff0f7', accentBorder: '#c9cbe2',
+    actionAccent: '#5b6099', actionAccentHover: '#515689',
+  },
   // 7月：七夕・夏夜 → 藍色
-  7: { illustration: month07, accent: '#3f4f7d', accentSoft: '#eef0f6', accentBorder: '#c5cbdd' },
+  7: {
+    illustration: month07, accent: '#3f4f7d',
+    accentSoft: '#eef0f6', accentBorder: '#c5cbdd',
+    actionAccent: '#3f4f7d', actionAccentHover: '#36446c',
+  },
   // 8月：ひまわり・夏空 → 水色
-  8: { illustration: month08, accent: '#2f7fa8', accentSoft: '#eaf4f9', accentBorder: '#bcd9e6' },
+  8: {
+    illustration: month08, accent: '#2f7fa8',
+    accentSoft: '#eaf4f9', accentBorder: '#bcd9e6',
+    actionAccent: '#2d7ba2', actionAccentHover: '#276c8e',
+  },
   // 9月：月・すすき → 落ち着いた金色
-  9: { illustration: month09, accent: '#8a6f35', accentSoft: '#f6f1e6', accentBorder: '#ddd0b4' },
+  9: {
+    illustration: month09, accent: '#8a6f35',
+    accentSoft: '#f6f1e6', accentBorder: '#ddd0b4',
+    actionAccent: '#8a6f35', actionAccentHover: '#78602e',
+  },
   // 10月：紅葉 → 淡い橙
-  10: { illustration: month10, accent: '#9a5a34', accentSoft: '#f8efe9', accentBorder: '#e3cbbc' },
+  10: {
+    illustration: month10, accent: '#9a5a34',
+    accentSoft: '#f8efe9', accentBorder: '#e3cbbc',
+    actionAccent: '#9a5a34', actionAccentHover: '#874f2e',
+  },
   // 11月：いちょう → 黄土色
-  11: { illustration: month11, accent: '#7f6533', accentSoft: '#f6f1e4', accentBorder: '#ddd2b3' },
+  11: {
+    illustration: month11, accent: '#7f6533',
+    accentSoft: '#f6f1e4', accentBorder: '#ddd2b3',
+    actionAccent: '#7f6533', actionAccentHover: '#6d572c',
+  },
   // 12月：雪・冬 → 冷たい水色
-  12: { illustration: month12, accent: '#41748f', accentSoft: '#ecf3f6', accentBorder: '#c2d8e2' },
+  12: {
+    illustration: month12, accent: '#41748f',
+    accentSoft: '#ecf3f6', accentBorder: '#c2d8e2',
+    actionAccent: '#41748f', actionAccentHover: '#39667d',
+  },
 }
 
 /** 月番号が範囲外でも必ずテーマを返す */

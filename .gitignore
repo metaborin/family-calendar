@@ -38,6 +38,7 @@ pwa-artifacts/
 recurring-time-artifacts/
 calendar-layout-artifacts/
 monthly-design-artifacts/
+design-polish-artifacts/
 
 # 環境変数・秘密情報
 .env
@@ -56,4 +57,5 @@ github-pages-result-for-gpt.md
 recurring-time-result-for-gpt.md
 calendar-layout-result-for-gpt.md
 monthly-design-result-for-gpt.md
+design-polish-result-for-gpt.md
 pwa-result-for-gpt.md
