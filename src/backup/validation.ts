@@ -234,14 +234,37 @@ function formatExportedAt(iso: string): string | null {
   return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日 ${pad(d.getHours())}:${pad(d.getMinutes())}`
 }
 
+/** "YYYY-MM-DD" → "YYYY-MM" */
+const toMonth = (dateKey: string) => dateKey.slice(0, 7)
+
 function buildSummary(
   backup: { exportedAt: string; data: Record<string, unknown> },
   counts: { schedules: number; timed: number; rules: number; excluded: number },
 ): BackupSummary {
+  // 自由入力メモ・時間付き予定の年月
   const months = new Set<string>([
     ...Object.keys(backup.data.schedules as object),
     ...Object.keys(backup.data.timedEvents as object),
   ])
+
+  /*
+   * 定期予定も対象期間へ含める。
+   * 定期予定しか無いバックアップで「予定なし」と出てしまわないようにするため、
+   * 開始日・終了日・「この日だけ休み」の日付をすべて見る。
+   * 無効化されている定期予定も、保存されているデータなので含める。
+   */
+  let hasOpenEndedRecurring = false
+  for (const rule of backup.data.recurringRules as Array<{
+    startDate: string
+    endDate: string | null
+    excludedDates: string[]
+  }>) {
+    months.add(toMonth(rule.startDate))
+    if (rule.endDate === null) hasOpenEndedRecurring = true
+    else months.add(toMonth(rule.endDate))
+    for (const d of rule.excludedDates) months.add(toMonth(d))
+  }
+
   const sorted = [...months].sort()
   return {
     exportedAtLabel: formatExportedAt(backup.exportedAt),
@@ -252,6 +275,7 @@ function buildSummary(
     excludedDateCount: counts.excluded,
     firstMonth: sorted[0] ?? null,
     lastMonth: sorted[sorted.length - 1] ?? null,
+    hasOpenEndedRecurring,
   }
 }
 

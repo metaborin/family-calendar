@@ -20,12 +20,24 @@ type Pending = {
   summary: BackupSummary
 }
 
+/**
+ * 対象期間の表示。
+ *   終了日なしの定期予定がある → 「2026年8月〜終了日なし」
+ *   それ以外                   → 「2026年8月〜2027年3月」（同じ月なら1つだけ）
+ *   4種類すべて空のときだけ     → 「予定なし」
+ */
 function formatMonthRange(summary: BackupSummary): string {
-  if (!summary.firstMonth || !summary.lastMonth) return '予定なし'
   const label = (mk: string) => {
     const [y, m] = mk.split('-')
     return `${Number(y)}年${Number(m)}月`
   }
+
+  if (!summary.firstMonth || !summary.lastMonth) return '予定なし'
+
+  if (summary.hasOpenEndedRecurring) {
+    return `${label(summary.firstMonth)}〜終了日なし`
+  }
+
   return summary.firstMonth === summary.lastMonth
     ? label(summary.firstMonth)
     : `${label(summary.firstMonth)}〜${label(summary.lastMonth)}`

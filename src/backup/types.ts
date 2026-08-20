@@ -43,10 +43,20 @@ export type BackupSummary = {
   recurringRuleCount: number
   /** 「この日だけ休み」にした日の合計件数 */
   excludedDateCount: number
-  /** データが存在する最古の年月（"YYYY-MM"）。無い場合は null */
+  /**
+   * データが存在する最古の年月（"YYYY-MM"）。無い場合は null。
+   * 自由入力メモ・時間付き予定に加え、定期予定の開始日・終了日・
+   * 「この日だけ休み」の日付も含めて求める。
+   */
   firstMonth: string | null
-  /** データが存在する最新の年月（"YYYY-MM"）。無い場合は null */
+  /**
+   * データが存在する最新の年月（"YYYY-MM"）。無い場合は null。
+   * 終了日なしの定期予定がある場合、この値は「判明している範囲」の最新であり、
+   * 表示上は hasOpenEndedRecurring を優先して「終了日なし」と示す。
+   */
   lastMonth: string | null
+  /** 終了日なし（endDate: null）の定期予定が1件以上あるか */
+  hasOpenEndedRecurring: boolean
 }
 
 /** 検証結果。失敗時はデータを一切変更しない */
