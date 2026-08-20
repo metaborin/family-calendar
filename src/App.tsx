@@ -41,10 +41,14 @@ import type {
   TimedEventStore,
   WeeklyRecurringRule,
 } from './events/types'
+import BackupDialog from './backup/BackupDialog'
+import { restoreToLocalStorage } from './backup/restore'
+import type { BackupData } from './backup/types'
 import MonthHeader from './theme/MonthHeader'
 import { getMonthTheme } from './theme/monthThemes'
 import './App.css'
 import './theme/monthTheme.css'
+import './backup/backup.css'
 import './pwa/pwa.css'
 import './events/events.css'
 import './print.css'
@@ -84,6 +88,8 @@ export default function App() {
   const [eventDraft, setEventDraft] = useState<TimedEventDraft | null>(null)
   const [rulesOpen, setRulesOpen] = useState(false)
   const [ruleToEdit, setRuleToEdit] = useState<string | null>(null)
+  const [backupOpen, setBackupOpen] = useState(false)
+  const [toast, setToast] = useState<string | null>(null)
   const [occurrence, setOccurrence] = useState<{
     rule: WeeklyRecurringRule
     dateKey: string
@@ -348,6 +354,62 @@ export default function App() {
     setRuleToEdit(null)
   }
 
+  // --- バックアップ・復元 ------------------------------------------------------
+
+  /**
+   * バックアップに入れるデータ。
+   * localStorage ではなく React の最新状態を渡すため、
+   * 入力直後（デバウンス保存前）でも最新の内容が含まれる。
+   */
+  const getCurrentData = useCallback(
+    (): BackupData => ({ names, schedules, timedEvents, recurringRules }),
+    [names, schedules, timedEvents, recurringRules],
+  )
+
+  /** 通知は一定時間で自動的に消す（印刷はされない） */
+  const toastTimer = useRef<number | undefined>(undefined)
+  const notify = useCallback((message: string) => {
+    setToast(message)
+    window.clearTimeout(toastTimer.current)
+    toastTimer.current = window.setTimeout(() => setToast(null), 5000)
+  }, [])
+
+  useEffect(() => () => window.clearTimeout(toastTimer.current), [])
+
+  /**
+   * バックアップからの全置換。
+   * 成功なら null、失敗ならエラーメッセージを返す（画面のデータは変更しない）。
+   */
+  const handleRestore = useCallback((data: BackupData): string | null => {
+    // 1. localStorage をまとめて置き換える（失敗時は内部でロールバックされる）
+    const result = restoreToLocalStorage(data)
+    if (!result.ok) return result.error
+
+    /*
+     * 2. React の状態を更新する。
+     *    これにより保存待ちのデバウンスタイマーは effect のクリーンアップで破棄され、
+     *    復元前の古い入力が後から書き戻されることはない。
+     */
+    setNames(data.names)
+    setSchedules(data.schedules)
+    setTimedEvents(data.timedEvents)
+    setRecurringRules(data.recurringRules)
+
+    /*
+     * 3. 離脱時保存が参照する ref も、この場で同期しておく。
+     *    （effect の実行を待たずにページが隠れても、古い内容を書き戻さないため）
+     */
+    latest.current = {
+      names: data.names,
+      schedules: data.schedules,
+      timedEvents: data.timedEvents,
+      recurringRules: data.recurringRules,
+    }
+
+    setSaveError(null)
+    return null
+  }, [])
+
   return (
     <div
       className="app"
@@ -428,6 +490,10 @@ export default function App() {
 
           <InstallGuide />
 
+          <button type="button" className="backup-button" onClick={() => setBackupOpen(true)}>
+            バックアップ
+          </button>
+
           <button type="button" className="controls__print controls__secondary" onClick={() => window.print()}>
             印刷
           </button>
@@ -507,6 +573,23 @@ export default function App() {
           onEditRule={handleEditRuleFromOccurrence}
           onClose={() => setOccurrence(null)}
         />
+      )}
+
+      {/* バックアップ・復元 */}
+      {backupOpen && (
+        <BackupDialog
+          getCurrentData={getCurrentData}
+          onRestore={handleRestore}
+          onNotify={notify}
+          onClose={() => setBackupOpen(false)}
+        />
+      )}
+
+      {/* バックアップ・復元の結果通知（印刷されない） */}
+      {toast && (
+        <p className="bk-toast no-print" role="status" aria-live="polite">
+          {toast}
+        </p>
       )}
 
       {/* 新しいバージョンの案内（押したときだけ更新する） */}
