@@ -140,6 +140,13 @@
   color: #5f1f1a;
 }
 
+/* 旧形式（schemaVersion 1）の復元前に出す警告 */
+.bk-warning--legacy {
+  border-left-color: #c98a00;
+  background: #fff8e1;
+  color: #6b4e00;
+}
+
 .bk-error {
   margin: 0 0 14px;
   padding: 10px 12px;

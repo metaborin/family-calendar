@@ -1,5 +1,15 @@
-import { COLUMN_IDS, type ColumnId } from '../types'
-import { BACKUP_APP_ID, BACKUP_SCHEMA_VERSION, type BackupSummary, type ValidationResult } from './types'
+import { COLUMN_IDS, type ColumnId, type FamilyNames, type ScheduleStore } from '../types'
+import type { TimedEventStore, WeeklyRecurringRule } from '../events/types'
+import type { DateRangeEvent } from '../range/types'
+import {
+  BACKUP_APP_ID,
+  BACKUP_SCHEMA_VERSION,
+  MIN_SUPPORTED_SCHEMA_VERSION,
+  type BackupData,
+  type BackupSchemaVersion,
+  type BackupSummary,
+  type ValidationResult,
+} from './types'
 
 /**
  * バックアップファイルの厳格な検証。
@@ -225,6 +235,39 @@ function checkRecurringRules(raw: unknown): { count: number; excludedCount: numb
   return { count: raw.length, excludedCount }
 }
 
+/**
+ * 期間予定の検証（schemaVersion 2 以降のみ）。
+ * 1件でも復元できない問題があれば、その時点で中止する。
+ */
+function checkRangeEvents(raw: unknown): number {
+  if (!Array.isArray(raw)) fail('期間予定のデータが配列ではありません。')
+  const ids = new Set<string>()
+
+  for (const event of raw) {
+    if (!isRecord(event)) fail('期間予定の項目が壊れています。')
+
+    if (typeof event.id !== 'string' || event.id === '') fail('期間予定にIDがありません。')
+    if (ids.has(event.id)) fail(`期間予定のIDが重複しています（${event.id}）。`)
+    ids.add(event.id)
+
+    if (!isColumnId(event.columnId)) fail('期間予定に不明な家族列があります。')
+    if (typeof event.title !== 'string' || event.title.trim() === '') {
+      fail('期間予定の予定名がありません。')
+    }
+    if (typeof event.startDate !== 'string' || !isRealDate(event.startDate)) {
+      fail(`期間予定「${event.title}」の開始日が正しくありません。`)
+    }
+    if (typeof event.endDate !== 'string' || !isRealDate(event.endDate)) {
+      fail(`期間予定「${event.title}」の終了日が正しくありません。`)
+    }
+    if (event.endDate < event.startDate) {
+      fail(`期間予定「${event.title}」の終了日が開始日より前です。`)
+    }
+  }
+
+  return raw.length
+}
+
 // ---------- 概要 ----------
 
 function formatExportedAt(iso: string): string | null {
@@ -238,13 +281,15 @@ function formatExportedAt(iso: string): string | null {
 const toMonth = (dateKey: string) => dateKey.slice(0, 7)
 
 function buildSummary(
-  backup: { exportedAt: string; data: Record<string, unknown> },
+  version: BackupSchemaVersion,
+  exportedAt: string,
+  data: BackupData,
   counts: { schedules: number; timed: number; rules: number; excluded: number },
 ): BackupSummary {
   // 自由入力メモ・時間付き予定の年月
   const months = new Set<string>([
-    ...Object.keys(backup.data.schedules as object),
-    ...Object.keys(backup.data.timedEvents as object),
+    ...Object.keys(data.schedules),
+    ...Object.keys(data.timedEvents),
   ])
 
   /*
@@ -254,25 +299,34 @@ function buildSummary(
    * 無効化されている定期予定も、保存されているデータなので含める。
    */
   let hasOpenEndedRecurring = false
-  for (const rule of backup.data.recurringRules as Array<{
-    startDate: string
-    endDate: string | null
-    excludedDates: string[]
-  }>) {
+  for (const rule of data.recurringRules) {
     months.add(toMonth(rule.startDate))
     if (rule.endDate === null) hasOpenEndedRecurring = true
     else months.add(toMonth(rule.endDate))
     for (const d of rule.excludedDates) months.add(toMonth(d))
   }
 
+  /*
+   * 期間予定も対象期間へ含める。
+   * 期間予定しか無いバックアップで「予定なし」と出さないため、
+   * 開始日と終了日の両方を見る。
+   */
+  for (const event of data.rangeEvents) {
+    months.add(toMonth(event.startDate))
+    months.add(toMonth(event.endDate))
+  }
+
   const sorted = [...months].sort()
   return {
-    exportedAtLabel: formatExportedAt(backup.exportedAt),
-    nameCount: Object.keys(backup.data.names as object).length,
+    schemaVersion: version,
+    isLegacyFormat: version < BACKUP_SCHEMA_VERSION,
+    exportedAtLabel: formatExportedAt(exportedAt),
+    nameCount: Object.keys(data.names).length,
     scheduleCount: counts.schedules,
     timedEventCount: counts.timed,
     recurringRuleCount: counts.rules,
     excludedDateCount: counts.excluded,
+    rangeEventCount: data.rangeEvents.length,
     firstMonth: sorted[0] ?? null,
     lastMonth: sorted[sorted.length - 1] ?? null,
     hasOpenEndedRecurring,
@@ -284,13 +338,21 @@ function buildSummary(
 /**
  * バックアップJSONの文字列を検証する。
  * 成功したときだけ復元してよい。失敗時は既存データを一切変更しないこと。
+ *
+ * schemaVersion 1（期間予定なし）も引き続き復元できる。
+ * その場合 data.rangeEvents は空配列として扱い、全置換の対象に含める
+ * （現在の端末にある期間予定はすべて消える。復元前に画面で警告する）。
  */
 export function validateBackupText(text: string): ValidationResult {
   let parsed: unknown
   try {
     parsed = JSON.parse(text)
   } catch {
-    return { ok: false, error: 'ファイルの中身がJSONとして読み取れません。家族カレンダーのバックアップファイルを選んでください。' }
+    return {
+      ok: false,
+      error:
+        'ファイルの中身がJSONとして読み取れません。家族カレンダーのバックアップファイルを選んでください。',
+    }
   }
 
   try {
@@ -305,9 +367,11 @@ export function validateBackupText(text: string): ValidationResult {
       fail('このバックアップ形式には対応していません。')
     }
     if (version > BACKUP_SCHEMA_VERSION) {
-      fail('このバックアップは、現在のアプリより新しい形式で作成されています。アプリを最新版へ更新してからもう一度お試しください。')
+      fail(
+        'このバックアップは、現在のアプリより新しい形式で作成されています。アプリを最新版へ更新してからもう一度お試しください。',
+      )
     }
-    if (version < BACKUP_SCHEMA_VERSION) {
+    if (version < MIN_SUPPORTED_SCHEMA_VERSION) {
       fail('このバックアップ形式には対応していません。')
     }
 
@@ -321,19 +385,43 @@ export function validateBackupText(text: string): ValidationResult {
       if (!(key in data)) fail(`バックアップに「${key}」が含まれていません。`)
     }
 
+    const isV2 = version >= 2
+    if (isV2 && !('rangeEvents' in data)) {
+      fail('バックアップに「rangeEvents」が含まれていません。')
+    }
+    /*
+     * schemaVersion 1 には期間予定が存在しない。
+     * それなのに rangeEvents が入っているファイルは、
+     * 版と中身が食い違っているため復元しない（黙って捨てない）。
+     */
+    if (!isV2 && 'rangeEvents' in data) {
+      fail('このバックアップは旧形式（schemaVersion 1）ですが、期間予定が含まれています。ファイルが壊れている可能性があります。')
+    }
+
     checkNames(data.names)
     const scheduleCount = checkSchedules(data.schedules)
     const timedCount = checkTimedEvents(data.timedEvents)
     const rules = checkRecurringRules(data.recurringRules)
+    if (isV2) checkRangeEvents(data.rangeEvents)
 
-    const backup = parsed as unknown as import('./types').FamilyCalendarBackupV1
+    // 旧形式でも、復元に使う形は現在の5種類へそろえる
+    const normalized: BackupData = {
+      names: data.names as FamilyNames,
+      schedules: data.schedules as ScheduleStore,
+      timedEvents: data.timedEvents as TimedEventStore,
+      recurringRules: data.recurringRules as WeeklyRecurringRule[],
+      rangeEvents: isV2 ? (data.rangeEvents as DateRangeEvent[]) : [],
+    }
+
     return {
       ok: true,
-      backup,
-      summary: buildSummary(
-        { exportedAt: backup.exportedAt, data: data as Record<string, unknown> },
-        { schedules: scheduleCount, timed: timedCount, rules: rules.count, excluded: rules.excludedCount },
-      ),
+      data: normalized,
+      summary: buildSummary(version as BackupSchemaVersion, parsed.exportedAt, normalized, {
+        schedules: scheduleCount,
+        timed: timedCount,
+        rules: rules.count,
+        excluded: rules.excludedCount,
+      }),
     }
   } catch (e) {
     if (e instanceof Invalid) return { ok: false, error: e.message }

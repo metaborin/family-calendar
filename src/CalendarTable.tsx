@@ -1,7 +1,10 @@
+import type { CSSProperties } from 'react'
 import { COLUMN_IDS, type ColumnId, type FamilyNames, type MonthSchedule } from './types'
 import type { CalendarDay } from './calendar'
 import CellEventList, { CellEventPrintList } from './events/CellEventList'
 import type { CellItem, TimedEvent, WeeklyRecurringRule } from './events/types'
+import { RangeBandLayer, RangeLabelList, RangePrintLabels } from './range/RangeBands'
+import type { DateRangeEvent, RangeSegment } from './range/types'
 
 type Props = {
   days: CalendarDay[]
@@ -10,9 +13,14 @@ type Props = {
   onCellChange: (day: number, columnId: ColumnId, value: string) => void
   /** その日・その列に表示する予定（時間付き＋定期予定を時刻順に並べたもの） */
   getCellItems: (day: number, columnId: ColumnId) => CellItem[]
+  /** その日・その列に描く期間予定の帯（レーン順） */
+  getRangeSegments: (day: number, columnId: ColumnId) => RangeSegment[]
+  /** 列ごとの帯の余白（--range-gutter / --range-gutter-print） */
+  rangeGutterStyles: Record<ColumnId, CSSProperties | undefined>
   onAddEvent: (day: number, columnId: ColumnId) => void
   onSelectTimedEvent: (day: number, columnId: ColumnId, event: TimedEvent) => void
   onSelectRecurring: (rule: WeeklyRecurringRule, dateKey: string) => void
+  onSelectRangeEvent: (event: DateRangeEvent) => void
 }
 
 /** 曜日に応じた行のクラス名（土＝薄い水色 / 日＝薄いピンク / 平日＝白） */
@@ -28,9 +36,12 @@ export default function CalendarTable({
   monthSchedule,
   onCellChange,
   getCellItems,
+  getRangeSegments,
+  rangeGutterStyles,
   onAddEvent,
   onSelectTimedEvent,
   onSelectRecurring,
+  onSelectRangeEvent,
 }: Props) {
   return (
     <table className="calendar-table">
@@ -72,9 +83,20 @@ export default function CalendarTable({
               {COLUMN_IDS.map((id) => {
                 const value = daySchedule?.[id] ?? ''
                 const items = getCellItems(day, id)
+                const segments = getRangeSegments(day, id)
                 const cellLabel = `${day}日 ${names[id]}`
                 return (
-                  <td key={id} className="cell">
+                  <td key={id} className="cell" style={rangeGutterStyles[id]}>
+                    {/*
+                      1. 期間予定の帯（絶対配置。行の高さも既存の表示位置も動かさない）
+                         画面・印刷の両方に出る。
+                    */}
+                    <RangeBandLayer
+                      segments={segments}
+                      targetName={names[id]}
+                      onSelect={onSelectRangeEvent}
+                    />
+
                     <button
                       type="button"
                       className="ev-add-button no-print"
@@ -84,7 +106,14 @@ export default function CalendarTable({
                       ＋
                     </button>
 
-                    {/* 1. 時間付き予定 → 2. 定期予定（画面用） */}
+                    {/* 期間予定の予定名（最初に見える日だけ1行使う・画面用） */}
+                    <RangeLabelList
+                      segments={segments}
+                      targetName={names[id]}
+                      onSelect={onSelectRangeEvent}
+                    />
+
+                    {/* 2. 時間付き予定 → 3. 定期予定（画面用） */}
                     <CellEventList
                       items={items}
                       cellLabel={cellLabel}
@@ -92,7 +121,7 @@ export default function CalendarTable({
                       onSelectRecurring={onSelectRecurring}
                     />
 
-                    {/* 3. 自由入力メモ（画面入力用） */}
+                    {/* 4. 自由入力メモ（画面入力用） */}
                     <textarea
                       className="cell__input"
                       value={value}
@@ -104,9 +133,11 @@ export default function CalendarTable({
                       印刷用のまとまり（画面では非表示）。
                       印刷時はこの箱をセル内へ絶対配置し、行の高さを
                       押し広げないようにしている（A4縦1ページを保つため）。
-                      並びは 1.時間付き予定 → 2.定期予定 → 3.自由入力メモ。
+                      並びは 1.期間予定の予定名 → 2.時間付き予定 → 3.定期予定 → 4.自由入力メモ。
+                      期間予定の縦帯は、この箱の外側（セル直下）へ絶対配置している。
                     */}
                     <div className="cell__print-area" aria-hidden="true">
+                      <RangePrintLabels segments={segments} />
                       <CellEventPrintList items={items} />
                       <div className="cell__print">{value}</div>
                     </div>

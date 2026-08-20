@@ -1,0 +1,227 @@
+/* ============================================================
+   期間予定（複数日にわたる予定）のスタイル
+
+   方針
+     - 表のセルは rowspan で結合しない。行数・列数・列幅は変えない。
+     - 帯は絶対配置。行の高さも、時間付き予定・定期予定・自由入力欄の
+       位置も動かさない。
+     - 帯は上下の罫線を少しまたいで描き、日ごとに分かれていても
+       目視では1本につながって見えるようにする。
+     - 土日の背景色・月別イラスト・予定文字より目立たせない。
+
+   横位置の数値は src/range/layout.ts の定数と必ず一致させること。
+     画面：左端 4px ＋ レーン間隔 6px（帯4px＋すき間2px）／押せる幅 18px
+     印刷：左端 0.4mm ＋ レーン間隔 1.0mm／帯 0.6mm（約1.7pt）
+   ============================================================ */
+
+/* 予定文字が帯へ重ならないよう、帯の分だけセルの左側を空ける。
+   余白の量は列ごと・月ごとに App.tsx が --range-gutter で渡す。 */
+.calendar-table td.cell {
+  padding-left: var(--range-gutter, 0px);
+}
+
+/* --- 帯を置く層 --- */
+
+.range-layer {
+  position: absolute;
+  inset: 0;
+  /* 層そのものは操作を奪わない（自由入力欄をそのまま使えるようにする） */
+  pointer-events: none;
+  z-index: 1;
+}
+
+.range-band {
+  position: absolute;
+  left: calc(4px + var(--lane, 0) * 6px);
+  /* 上下の罫線をまたいで、次の日の帯とつながって見せる */
+  top: -1px;
+  bottom: -1px;
+  width: 4px;
+  background: var(--range-band, #4a6b8a);
+}
+
+/* 開始日は上端を丸める */
+.range-band--start {
+  top: 3px;
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
+}
+
+/* 終了日は下端を丸める（1日だけの予定は上下とも丸くなる） */
+.range-band--end {
+  bottom: 3px;
+  border-bottom-left-radius: 2px;
+  border-bottom-right-radius: 2px;
+}
+
+/* 翌月へ続く予定は、その月の最後に見える日の下端へ小さな下向き記号を出す */
+.range-band--to-next::after {
+  content: '';
+  position: absolute;
+  left: -2px;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid var(--range-band, #4a6b8a);
+}
+
+/*
+   見た目の帯は4pxだが、それだけでは押しづらいので
+   透明な領域を重ねて押しやすくする（印刷しない）。
+   読み上げ・キーボード操作は予定名ラベルが受け持つ。
+*/
+.range-hit {
+  position: absolute;
+  left: calc(4px + var(--lane, 0) * 6px);
+  top: 0;
+  bottom: 0;
+  width: 18px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.range-hit:hover {
+  background: rgb(0 0 0 / 6%);
+}
+
+/* --- 予定名ラベル（画面） --- */
+
+.range-label-list {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  padding: 2px 3px 0;
+  list-style: none;
+}
+
+.range-label-list li + li {
+  margin-top: 2px;
+}
+
+.range-label {
+  display: block;
+  width: 100%;
+  padding: 1px 4px;
+  border: 0;
+  border-left: 3px solid var(--range-band, #4a6b8a);
+  border-radius: 2px;
+  background: var(--range-soft, #eef2f7);
+  color: var(--range-text, #33506b);
+  font-size: 12.5px;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+  /* 長い予定名は省略する。全文は title・読み上げ名・期間予定ダイアログで確認できる */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.range-label:hover {
+  filter: brightness(0.97);
+}
+
+.range-label:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.range-label__note {
+  margin-left: 3px;
+  font-size: 11px;
+}
+
+/* --- 期間予定の一覧（ダイアログ） --- */
+
+.range-item .ev-rule__range {
+  font-weight: 700;
+  color: #333;
+}
+
+/* --- 印刷用ラベルは画面では隠す --- */
+
+.range-print-labels {
+  display: none;
+}
+
+/* ============================================================
+   印刷
+   ============================================================ */
+
+@media print {
+  /* 押すための透明領域は印刷しない（帯とラベルだけを印刷する） */
+  .range-hit {
+    display: none !important;
+  }
+
+  /*
+     帯が上下の罫線をまたげるようにする。
+     セルの中身は .cell__print-area 側が自分で切り取るため、
+     ここを visible にしても予定文字がはみ出すことはない。
+  */
+  .calendar-table td.cell {
+    overflow: visible;
+    padding-left: 0;
+  }
+
+  .range-layer {
+    display: block;
+  }
+
+  .range-band {
+    left: calc(0.4mm + var(--lane, 0) * 1mm);
+    top: -0.3mm;
+    bottom: -0.3mm;
+    /* 約1.7pt。細すぎると印刷で消えるため 0.6mm を下限にしている */
+    width: 0.6mm;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .range-band--start {
+    top: 0.7mm;
+    border-top-left-radius: 0.3mm;
+    border-top-right-radius: 0.3mm;
+  }
+
+  .range-band--end {
+    bottom: 0.7mm;
+    border-bottom-left-radius: 0.3mm;
+    border-bottom-right-radius: 0.3mm;
+  }
+
+  .range-band--to-next::after {
+    left: -0.3mm;
+    border-left-width: 0.6mm;
+    border-right-width: 0.6mm;
+    border-top-width: 0.7mm;
+  }
+
+  /* 印刷でも予定文字を帯の右へ逃がす（列幅・行高・文字サイズは変えない） */
+  .calendar-table .cell__print-area {
+    left: var(--range-gutter-print, 0mm);
+  }
+
+  .range-print-labels {
+    display: block;
+    padding: 0.4mm 1.2mm 0;
+  }
+
+  .range-print-label {
+    font-size: 8pt;
+    line-height: 1.25;
+    color: var(--range-text, #33506b);
+    overflow-wrap: anywhere;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .range-print-label__note {
+    font-size: 7pt;
+  }
+}

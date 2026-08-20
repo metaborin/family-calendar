@@ -41,6 +41,7 @@ monthly-design-artifacts/
 design-polish-artifacts/
 backup-restore-artifacts/
 backup-safety-artifacts/
+range-events-artifacts/
 
 # 環境変数・秘密情報
 .env
@@ -62,4 +63,5 @@ monthly-design-result-for-gpt.md
 design-polish-result-for-gpt.md
 backup-restore-result-for-gpt.md
 backup-safety-result-for-gpt.md
+range-events-result-for-gpt.md
 pwa-result-for-gpt.md

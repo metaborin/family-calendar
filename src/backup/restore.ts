@@ -1,9 +1,10 @@
 import { NAMES_KEY, SCHEDULES_KEY } from '../storage'
 import { RECURRING_RULES_KEY, TIMED_EVENTS_KEY } from '../events/storage'
+import { RANGE_EVENTS_KEY } from '../range/storage'
 import type { BackupData } from './types'
 
 /**
- * バックアップの内容で localStorage の4キーをまとめて置き換える。
+ * バックアップの内容で localStorage の5キーをまとめて置き換える。
  *
  * localStorage にトランザクションは無いため、
  * 「一部のキーだけ新しく、残りは古い」という中途半端な状態を避ける必要がある。
@@ -14,7 +15,7 @@ import type { BackupData } from './types'
  * 元の値を戻す。先に削除しないと、残っている大きな新データのせいで
  * 「元データ全体は容量内に収まるのに、戻す途中で再び容量不足になる」ことがある。
  *
- * 最後に4キーを読み直し、復元前と完全一致した場合だけロールバック成功とする。
+ * 最後に5キーを読み直し、復元前と完全一致した場合だけロールバック成功とする。
  * 例外が出なかったことだけを根拠に成功と判断しない。
  */
 
@@ -26,7 +27,13 @@ export type RestoreResult =
   | { ok: false; error: string; rolledBack: boolean }
 
 /** 書き込む順番（ロールバックも同じキー集合を対象にする） */
-const KEYS = [NAMES_KEY, SCHEDULES_KEY, TIMED_EVENTS_KEY, RECURRING_RULES_KEY] as const
+const KEYS = [
+  NAMES_KEY,
+  SCHEDULES_KEY,
+  TIMED_EVENTS_KEY,
+  RECURRING_RULES_KEY,
+  RANGE_EVENTS_KEY,
+] as const
 
 const ROLLBACK_OK =
   '復元中に保存エラーが発生しました。現在のデータは元の状態へ戻しました。'
@@ -35,7 +42,7 @@ const ROLLBACK_FAILED =
   'ブラウザの保存容量を確認したうえで、ページを再読み込みして状態をご確認ください。'
 
 /**
- * 4キーを読み直し、控えておいた値と完全一致するか確かめる。
+ * 5キーを読み直し、控えておいた値と完全一致するか確かめる。
  * 読み取り自体に失敗した場合も不一致として扱う。
  */
 function matchesPrevious(storage: StorageLike, previous: Record<string, string | null>): boolean {
@@ -63,6 +70,7 @@ export function restoreToLocalStorage(
       [SCHEDULES_KEY]: JSON.stringify(data.schedules),
       [TIMED_EVENTS_KEY]: JSON.stringify(data.timedEvents),
       [RECURRING_RULES_KEY]: JSON.stringify(data.recurringRules),
+      [RANGE_EVENTS_KEY]: JSON.stringify(data.rangeEvents),
     }
   } catch {
     return { ok: false, error: '復元データを準備できませんでした。', rolledBack: true }
@@ -112,7 +120,7 @@ export function restoreToLocalStorage(
       }
     }
 
-    // 6. 4キーを読み直し、復元前と完全一致した場合だけ成功とする
+    // 6. 5キーを読み直し、復元前と完全一致した場合だけ成功とする
     const rolledBack = matchesPrevious(storage, previous)
 
     return {

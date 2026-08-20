@@ -2,19 +2,19 @@ import {
   BACKUP_APP_ID,
   BACKUP_SCHEMA_VERSION,
   type BackupData,
-  type FamilyCalendarBackupV1,
+  type FamilyCalendarBackupV2,
 } from './types'
 
 /** 2桁ゼロ埋め */
 const pad = (n: number) => String(n).padStart(2, '0')
 
 /**
- * バックアップ本体を作る。
+ * バックアップ本体を作る（現在の形式は schemaVersion 2）。
  *
  * 引数の data は「Reactの最新状態」を渡すこと。
  * localStorage から読むと、デバウンス保存待ちの入力が欠ける可能性がある。
  */
-export function createBackup(data: BackupData, now: Date = new Date()): FamilyCalendarBackupV1 {
+export function createBackup(data: BackupData, now: Date = new Date()): FamilyCalendarBackupV2 {
   return {
     appId: BACKUP_APP_ID,
     schemaVersion: BACKUP_SCHEMA_VERSION,
@@ -24,6 +24,7 @@ export function createBackup(data: BackupData, now: Date = new Date()): FamilyCa
       schedules: data.schedules,
       timedEvents: data.timedEvents,
       recurringRules: data.recurringRules,
+      rangeEvents: data.rangeEvents,
     },
   }
 }
@@ -41,7 +42,7 @@ export function buildBackupFileName(now: Date = new Date()): string {
 }
 
 /** 保存するJSON文字列（2スペース整形・日本語はそのまま） */
-export function serializeBackup(backup: FamilyCalendarBackupV1): string {
+export function serializeBackup(backup: FamilyCalendarBackupV2): string {
   return JSON.stringify(backup, null, 2)
 }
 

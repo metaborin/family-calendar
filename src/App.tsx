@@ -41,6 +41,11 @@ import type {
   TimedEventStore,
   WeeklyRecurringRule,
 } from './events/types'
+import RangeEventManager from './range/RangeEventManager'
+import { loadRangeEvents, saveRangeEvents } from './range/storage'
+import { applyRangeEventDraft, removeRangeEvent } from './range/mutations'
+import { buildMonthRangeLayout, printGutterMm, screenGutterPx } from './range/layout'
+import type { DateRangeEvent, RangeEventDraft, RangeSegment } from './range/types'
 import BackupDialog from './backup/BackupDialog'
 import { restoreToLocalStorage } from './backup/restore'
 import type { BackupData } from './backup/types'
@@ -51,7 +56,11 @@ import './theme/monthTheme.css'
 import './backup/backup.css'
 import './pwa/pwa.css'
 import './events/events.css'
+import './range/range.css'
 import './print.css'
+
+/** 期間予定が無いセルで、毎回新しい配列を作らないための共有の空配列 */
+const EMPTY_SEGMENTS: RangeSegment[] = []
 
 /** localStorageへ書き込むまでの待ち時間（入力のたびに書かないためのデバウンス） */
 const SAVE_DEBOUNCE_MS = 400
@@ -84,10 +93,16 @@ export default function App() {
     initialEvents.recurringRules,
   )
 
+  // 期間予定（複数日にわたる終日予定。さらに別のlocalStorageキーへ保存する）
+  const [initialRange] = useState(loadRangeEvents)
+  const [rangeEvents, setRangeEvents] = useState<DateRangeEvent[]>(initialRange.rangeEvents)
+
   // ダイアログの開閉
   const [eventDraft, setEventDraft] = useState<TimedEventDraft | null>(null)
   const [rulesOpen, setRulesOpen] = useState(false)
   const [ruleToEdit, setRuleToEdit] = useState<string | null>(null)
+  const [rangeOpen, setRangeOpen] = useState(false)
+  const [rangeToEdit, setRangeToEdit] = useState<string | null>(null)
   const [backupOpen, setBackupOpen] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
   const [occurrence, setOccurrence] = useState<{
@@ -96,7 +111,7 @@ export default function App() {
   } | null>(null)
 
   // 読み込み時のエラーは残したままにし、保存エラーは発生／解消のたびに更新する
-  const loadError = initial.error ?? initialEvents.error
+  const loadError = initial.error ?? initialEvents.error ?? initialRange.error
   const [saveError, setSaveError] = useState<string | null>(null)
   const errorMessage = saveError ?? loadError
 
@@ -127,25 +142,64 @@ export default function App() {
     [timedMonth, occurrences, year, month],
   )
 
+  /*
+   * 期間予定は各日へ複製せず、開始日・終了日の1件から
+   * 「表示中の月と重なる日」をそのつど計算する。
+   * 月・年をまたぐ予定も、この計算だけで両方の月へ表示される。
+   */
+  const rangeLayout = useMemo(
+    () => buildMonthRangeLayout(rangeEvents, year, month, dayCount),
+    [rangeEvents, year, month, dayCount],
+  )
+
+  const getRangeSegments = useCallback(
+    (day: number, columnId: ColumnId): RangeSegment[] =>
+      rangeLayout.segments.get(day)?.get(columnId) ?? EMPTY_SEGMENTS,
+    [rangeLayout],
+  )
+
+  /**
+   * 列ごとに、帯の分だけ予定文字を右へ逃がすための余白。
+   * 同じ列は月内で同じ幅にそろえ、行ごとに文字の左端がずれないようにする。
+   */
+  const rangeGutterStyles = useMemo(() => {
+    const styles = {} as Record<ColumnId, React.CSSProperties | undefined>
+    for (const columnId of COLUMN_IDS) {
+      const lanes = rangeLayout.laneCounts[columnId]
+      styles[columnId] =
+        lanes > 0
+          ? ({
+              '--range-gutter': `${screenGutterPx(lanes)}px`,
+              '--range-gutter-print': `${printGutterMm(lanes)}mm`,
+            } as React.CSSProperties)
+          : undefined
+    }
+    return styles
+  }, [rangeLayout])
+
   // 予定が多い月は、印刷が1ページに収まらないことがあるため画面上で知らせる
   const printWarning = useMemo(() => {
     let maxPerCell = 0
     for (const day of days) {
       for (const columnId of COLUMN_IDS) {
-        const count = getCellItems(day.day, columnId).length
+        const labels = getRangeSegments(day.day, columnId).filter((s) => s.isFirstVisible).length
+        const count = getCellItems(day.day, columnId).length + labels
         if (count > maxPerCell) maxPerCell = count
       }
     }
     return maxPerCell >= 4
-  }, [days, getCellItems])
+  }, [days, getCellItems, getRangeSegments])
+
+  // 同じ日に期間予定が重なりすぎると、印刷で見分けにくくなるため知らせる
+  const overlapWarning = rangeLayout.maxOverlap >= 4
 
   // --- localStorageへの保存（デバウンス＋離脱時の書き出し） ------------------
 
   // 離脱時に書き出すため、最新の内容を保持しておく
-  const latest = useRef({ names, schedules, timedEvents, recurringRules })
+  const latest = useRef({ names, schedules, timedEvents, recurringRules, rangeEvents })
   useEffect(() => {
-    latest.current = { names, schedules, timedEvents, recurringRules }
-  }, [names, schedules, timedEvents, recurringRules])
+    latest.current = { names, schedules, timedEvents, recurringRules, rangeEvents }
+  }, [names, schedules, timedEvents, recurringRules, rangeEvents])
 
   /*
    * 利用者が実際に入力・変更するまでは保存しない。
@@ -181,6 +235,12 @@ export default function App() {
     return () => clearTimeout(timer)
   }, [recurringRules])
 
+  useEffect(() => {
+    if (!isDirty.current) return
+    const timer = setTimeout(() => setSaveError(saveRangeEvents(rangeEvents)), SAVE_DEBOUNCE_MS)
+    return () => clearTimeout(timer)
+  }, [rangeEvents])
+
   // タブを閉じる／隠す直前に、デバウンス待ちの内容を確実に書き出す
   useEffect(() => {
     const flush = () => {
@@ -189,6 +249,7 @@ export default function App() {
       saveSchedules(latest.current.schedules)
       saveTimedEvents(latest.current.timedEvents)
       saveRecurringRules(latest.current.recurringRules)
+      saveRangeEvents(latest.current.rangeEvents)
     }
     const onVisibilityChange = () => {
       if (document.visibilityState === 'hidden') flush()
@@ -354,6 +415,31 @@ export default function App() {
     setRuleToEdit(null)
   }
 
+  // --- 期間予定 --------------------------------------------------------------
+
+  const handleSaveRangeEvent = (draft: RangeEventDraft) => {
+    isDirty.current = true
+    setRangeEvents((prev) => applyRangeEventDraft(prev, draft))
+    setRangeToEdit(null)
+  }
+
+  const handleDeleteRangeEvent = (id: string) => {
+    isDirty.current = true
+    setRangeEvents((prev) => removeRangeEvent(prev, id))
+    setRangeToEdit(null)
+  }
+
+  /** カレンダーの帯や予定名を押したときに、その期間予定の編集を開く */
+  const openRangeEditor = useCallback((event: DateRangeEvent) => {
+    setRangeToEdit(event.id)
+    setRangeOpen(true)
+  }, [])
+
+  const closeRangeManager = () => {
+    setRangeOpen(false)
+    setRangeToEdit(null)
+  }
+
   // --- バックアップ・復元 ------------------------------------------------------
 
   /**
@@ -362,8 +448,8 @@ export default function App() {
    * 入力直後（デバウンス保存前）でも最新の内容が含まれる。
    */
   const getCurrentData = useCallback(
-    (): BackupData => ({ names, schedules, timedEvents, recurringRules }),
-    [names, schedules, timedEvents, recurringRules],
+    (): BackupData => ({ names, schedules, timedEvents, recurringRules, rangeEvents }),
+    [names, schedules, timedEvents, recurringRules, rangeEvents],
   )
 
   /** 通知は一定時間で自動的に消す（印刷はされない） */
@@ -394,6 +480,7 @@ export default function App() {
     setSchedules(data.schedules)
     setTimedEvents(data.timedEvents)
     setRecurringRules(data.recurringRules)
+    setRangeEvents(data.rangeEvents)
 
     /*
      * 3. 離脱時保存が参照する ref も、この場で同期しておく。
@@ -404,6 +491,7 @@ export default function App() {
       schedules: data.schedules,
       timedEvents: data.timedEvents,
       recurringRules: data.recurringRules,
+      rangeEvents: data.rangeEvents,
     }
 
     setSaveError(null)
@@ -484,6 +572,17 @@ export default function App() {
             予定を追加
           </button>
 
+          <button
+            type="button"
+            className="controls__secondary"
+            onClick={() => {
+              setRangeToEdit(null)
+              setRangeOpen(true)
+            }}
+          >
+            期間予定
+          </button>
+
           <button type="button" className="controls__secondary" onClick={() => setRulesOpen(true)}>
             定期予定
           </button>
@@ -518,6 +617,13 @@ export default function App() {
       <div className="sheet">
         <MonthHeader year={year} month={month} illustration={monthTheme.illustration} />
 
+        {overlapWarning && (
+          <p className="ev-print-warning no-print">
+            同じ日に期間予定が多く重なっています。
+            印刷時に見づらくなる可能性があります（登録した期間予定は消えていません）。
+          </p>
+        )}
+
         {printWarning && (
           <p className="ev-print-warning no-print">
             予定が多い日があります。印刷すると1ページに収まらない場合があります
@@ -532,9 +638,12 @@ export default function App() {
             monthSchedule={monthSchedule}
             onCellChange={handleCellChange}
             getCellItems={getCellItems}
+            getRangeSegments={getRangeSegments}
+            rangeGutterStyles={rangeGutterStyles}
             onAddEvent={openAddEvent}
             onSelectTimedEvent={openEditEvent}
             onSelectRecurring={openOccurrence}
+            onSelectRangeEvent={openRangeEditor}
           />
         </div>
       </div>
@@ -560,6 +669,20 @@ export default function App() {
           onDelete={handleDeleteRule}
           onToggleEnabled={handleToggleRule}
           onClose={closeRules}
+        />
+      )}
+
+      {/* 期間予定の一覧・追加・編集 */}
+      {rangeOpen && (
+        <RangeEventManager
+          events={rangeEvents}
+          names={names}
+          year={year}
+          month={month}
+          initialEditId={rangeToEdit}
+          onSave={handleSaveRangeEvent}
+          onDelete={handleDeleteRangeEvent}
+          onClose={closeRangeManager}
         />
       )}
 

@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import Dialog from '../events/Dialog'
 import { buildBackupFileName, createBackup, downloadBackupFile, serializeBackup } from './backupFormat'
 import { MAX_BACKUP_BYTES, validateBackupText } from './validation'
-import type { BackupData, BackupSummary, FamilyCalendarBackupV1 } from './types'
+import type { BackupData, BackupSummary } from './types'
 
 type Props = {
   /** 保存するデータ。必ずReactの最新状態を渡すこと */
@@ -16,7 +16,8 @@ type Props = {
 
 type Pending = {
   fileName: string
-  backup: FamilyCalendarBackupV1
+  /** 旧形式なら rangeEvents: [] を補ってある、復元にそのまま使えるデータ */
+  data: BackupData
   summary: BackupSummary
 }
 
@@ -89,12 +90,12 @@ export default function BackupDialog({ getCurrentData, onRestore, onClose, onNot
       setError(result.error)
       return
     }
-    setPending({ fileName: file.name, backup: result.backup, summary: result.summary })
+    setPending({ fileName: file.name, data: result.data, summary: result.summary })
   }
 
   const handleConfirmRestore = () => {
     if (!pending) return
-    const message = onRestore(pending.backup.data)
+    const message = onRestore(pending.data)
     if (message) {
       setError(message)
       return
@@ -161,6 +162,13 @@ export default function BackupDialog({ getCurrentData, onRestore, onClose, onNot
                 <dd>{pending.fileName}</dd>
               </div>
               <div>
+                <dt>形式</dt>
+                <dd>
+                  schemaVersion {pending.summary.schemaVersion}
+                  {pending.summary.isLegacyFormat && "（旧形式）"}
+                </dd>
+              </div>
+              <div>
                 <dt>作成日時</dt>
                 <dd>{pending.summary.exportedAtLabel ?? '不明'}</dd>
               </div>
@@ -185,10 +193,25 @@ export default function BackupDialog({ getCurrentData, onRestore, onClose, onNot
                 <dd>{pending.summary.excludedDateCount}件</dd>
               </div>
               <div>
+                <dt>期間予定</dt>
+                <dd>{pending.summary.rangeEventCount}件</dd>
+              </div>
+              <div>
                 <dt>対象期間</dt>
                 <dd>{formatMonthRange(pending.summary)}</dd>
               </div>
             </dl>
+
+            {pending.summary.isLegacyFormat && (
+              <p className="bk-warning bk-warning--legacy" role="alert">
+                このバックアップは旧形式です。
+                <br />
+                期間予定は含まれていません。
+                <br />
+                <br />
+                復元すると、この端末に現在登録されている期間予定はすべて削除されます。
+              </p>
+            )}
 
             <p className="bk-warning">
               復元すると、この端末に現在保存されている家族名と予定は、
